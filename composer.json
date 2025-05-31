@@ -1,11 +1,15 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "jvc-byte/learning_assistance",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A simple learning assistant that helps students ask questions about lessons — and uses AI to answer them.",
     "keywords": [
         "laravel",
-        "framework"
+        "framework",
+        "learning",
+        "assistant",
+        "ai",
+        "chatbot"
     ],
     "license": "MIT",
     "require": {
