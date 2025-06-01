@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, MessageCircle } from 'lucide-vue-next';
+import { BookOpen, BookIcon, Folder, LayoutGrid, MessageSquareTextIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -15,9 +15,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Chat',
-        href: '/chat',
-        icon: MessageCircle,
+        title: 'Lessons',
+        href: '/lessons',
+        icon: BookIcon,
+    },
+    {
+        title: 'AI ChatBot',
+        href: '/chatbot',
+        icon: MessageSquareTextIcon,
     }
 ];
 

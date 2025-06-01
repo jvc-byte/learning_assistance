@@ -1,0 +1,46 @@
+{
+    "info": {
+        "name": "Learning Assistance Chat API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Send Chat Message",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"_token\": \"{{csrf_token}}\",\n    \"message\": \"Hello! How are you?\"\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        },
+                        "description": "Include CSRF token and message in the request body. Make sure to set the csrf_token environment variable in Postman."
+                    }
+                },
+                "url": {
+                    "raw": "http://localhost:8000/chat",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "chat"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
