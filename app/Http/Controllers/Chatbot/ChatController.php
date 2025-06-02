@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Chatbot;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
@@ -56,7 +57,7 @@ class ChatController extends Controller
             }
 
         } catch (\Exception $e) {
-            \Log::error('Chat API Error: ' . $e->getMessage());
+            Log::error('Chat API Error: ' . $e->getMessage());
             
             return response()->json(['error' => 'Failed to generate response: ' . $e->getMessage()], 500);
         }

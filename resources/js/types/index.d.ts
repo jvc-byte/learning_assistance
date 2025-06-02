@@ -36,4 +36,10 @@ export interface User {
     updated_at: string;
 }
 
+export interface Conversation {
+    id: number;
+    title: string;
+    date: string;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
