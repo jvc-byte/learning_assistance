@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { MessageSquare } from 'lucide-vue-next';
+import { MessageSquareDiff } from 'lucide-vue-next';
 import { nextTick, ref } from 'vue';
 import ChatbotLayout from '@/layouts/ChatbotLayout.vue';
 
@@ -58,7 +58,7 @@ const sendMessage = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
             },
             body: JSON.stringify({ message: messageToSend }),
         });
@@ -102,11 +102,11 @@ const sendMessage = async () => {
         });
 
         isLoading.value = false;
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Unexpected error:', error);
         messages.value.push({
             id: ++messageCount.value,
-            content: 'Unexpected error: ' + error.message,
+            content: 'Unexpected error: ' + (error instanceof Error ? error.message : String(error)),
             sender: 'assistant',
             timestamp: new Date().toLocaleTimeString(),
         });
@@ -117,16 +117,16 @@ const sendMessage = async () => {
 </script>
 
 <template>
-    <Head title="AI ChatBot" />
+    <Head title="Chat Title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <ChatbotLayout>
             <div class="flex h-full flex-col">
                 <div class="flex items-center justify-between border-b p-4">
-                    <h1 class="text-2xl font-semibold">AI ChatBot</h1>
+                    <h1 class="text-2xl font-semibold">Chat Title</h1>
                     <div class="flex items-center space-x-2">
                         <Button variant="ghost" size="sm">
-                            <MessageSquare class="h-4 w-4" />
+                            <MessageSquareDiff class="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
