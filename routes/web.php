@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\LessonController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -19,6 +20,7 @@ Route::get('lesson', function () {
 
 Route::resource('users', UserController::class);
 Route::resource('roles', RoleController::class);
+Route::resource('lessons', LessonController::class);
 
 
 

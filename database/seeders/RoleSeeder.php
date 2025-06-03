@@ -30,6 +30,10 @@ class RoleSeeder extends Seeder
                 'roles.create',
                 'roles.edit',
                 'roles.delete',
+                'lessons.view',
+                'lessons.create',
+                'lessons.edit',
+                'lessons.delete',
             ],
             'user' => [
                 'users.view',

@@ -26,7 +26,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Lessons',
-        href: '/lesson',
+        href: '/lessons',
         icon: BookIcon,
     },
     {
