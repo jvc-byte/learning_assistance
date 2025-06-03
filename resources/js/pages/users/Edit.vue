@@ -8,10 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
+import { Role, User } from '@/types/User';
 import { Undo2 } from 'lucide-vue-next';
 
 interface Props {
-    user: any;
+    user: User;
+    roles: Role[];
+    userRoles: string[];
 }
 
 const props = defineProps<Props>();
@@ -26,13 +29,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 const form = useForm({
     name: props.user.name,
     email: props.user.email,
+    roles: props.userRoles,
 });
 
 function submit() {
     form.put(route('users.update', props.user.id), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset();
+            // Don't reset the form - we want to keep the updated values visible
+            console.log('User updated successfully');
+        },
+        onError: (errors) => {
+            console.error('Update failed:', errors);
         },
     });
 }
@@ -64,6 +72,22 @@ function submit() {
                     <Label for="email">Email</Label>
                     <Input id="email" class="mt-1 block w-full" v-model="form.email" required autocomplete="email" placeholder="Email" />
                     <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="name">Roles: </Label>
+                    <div v-for="role in props.roles" :key="role.name" class="flex items-center space-x-3">
+                        <label for="remember" class="flex items-center space-x-2">
+                            <input
+                                type="checkbox"
+                                v-model="form.roles"
+                                :value="role.name"
+                                class="form-checkbox h-5 w-5 rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
+                            />
+                            <span class="text-gray-800 capitalize">{{ role.name }}</span>
+                        </label>
+                    </div>
+                    <InputError class="mt-2" :message="form.errors.roles" />
                 </div>
 
                 <div class="flex items-center gap-4">

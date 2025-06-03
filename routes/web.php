@@ -20,7 +20,13 @@ Route::get('lesson', function () {
 Route::resource('users', UserController::class);
 Route::resource('roles', RoleController::class);
 
+
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/chatbot.php';
+require __DIR__.'/role_permission.php';
+require __DIR__.'/user_permission.php';
+
+
 

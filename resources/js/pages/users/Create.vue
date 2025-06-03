@@ -17,6 +17,7 @@ import { Undo2 } from 'lucide-vue-next';
 interface Props {
     mustVerifyEmail: boolean;
     status?: string;
+    roles: any[];
 }
 
 defineProps<Props>();
@@ -33,6 +34,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    role: [],
 });
 
 function submit() {
@@ -81,6 +83,17 @@ function submit() {
                     <Label for="password_confirmation">Confirm Password</Label>
                     <Input id="password_confirmation" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="confirm-password" placeholder="Confirm Password" />
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="name">Roles: </Label>
+                    <div v-for="role in roles" :key="role.id" class="flex items-center space-x-3">
+                        <label for="remember" class="flex items-center space-x-2">
+                            <input type="checkbox" v-model="form.role" :value="role.name" class="form-checkbox h-5 w-5 rounded text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                            <span class="text-gray-800 capitalize">{{ role.name }}</span>
+                        </label>
+                    </div>
+                    <InputError class="mt-2" :message="form.errors.role" />
                 </div>
 
                 <div class="flex items-center gap-4">

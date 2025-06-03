@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Undo2 } from 'lucide-vue-next';
+import { can } from '@/lib/can';
 
 interface Props {
     user: any;
@@ -71,6 +72,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <!-- Actions -->
                     <div class="flex h-10 justify-end">
                         <Link
+                            v-if="can('users.edit')"    
                             :href="route('users.edit', user.id)"
                             class="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >

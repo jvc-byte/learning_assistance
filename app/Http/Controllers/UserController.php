@@ -11,6 +11,7 @@ use Inertia\Inertia;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -19,9 +20,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::with('roles', 'permissions')->get();
+        $auth = [
+            'user' => Auth::user(),
+            'permissions' => Auth::user()?->permissions->pluck('name')->toArray() ?? [],
+            'roles' => Auth::user()?->roles->pluck('name')->toArray() ?? [],
+        ];
+        
         return Inertia::render('users/Index', [
-            "users" => $users
+            "users" => $users,
+            "roles" => Role::all(),
+            'auth' => $auth
         ]);
     }
 
@@ -32,7 +41,8 @@ class UserController extends Controller
     {
         $users = User::all();
         return Inertia::render('users/Create', [
-            "users" => $users
+            "users" => $users,
+            "roles" => Role::all()
         ]);
     }
 
@@ -53,6 +63,8 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $user -> syncRoles($request->role);
+
         event(new Registered($user));
 
         return to_route('users.index');
@@ -63,9 +75,10 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
         return Inertia::render('users/Show', [
-            'user' => $user
+            'user' => $user,
+            'roles' => Role::all()
         ]);
     }
 
@@ -76,7 +89,9 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         return Inertia::render('users/Edit', [
-            'user' => $user
+            'user' => $user,
+            'userRoles' => $user->roles->pluck('name')->toArray(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -87,7 +102,11 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|lowercase|email|max:255|',
+            'roles' => 'required|array|min:1',
+        ], [
+            'roles.required' => 'At least one role must be selected',
+            'roles.min' => 'At least one role must be selected',
         ]);
 
         $user = User::findOrFail($id);
@@ -95,6 +114,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
         ]);
+        $user->syncRoles($request->roles);
 
         return to_route('users.index');
     }

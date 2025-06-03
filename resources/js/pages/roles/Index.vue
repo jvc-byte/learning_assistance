@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
+import { can } from '@/lib/can';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -32,6 +33,7 @@ function deleteRole(id: number) {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="self-end">
                 <Link
+                    v-if="can('roles.create')"
                     :href="route('roles.create')"
                     class="flex cursor-pointer items-center rounded-lg bg-blue-700 px-3 py-2 text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
@@ -80,12 +82,14 @@ function deleteRole(id: number) {
                                     Show
                                 </Link>
                                 <Link
+                                    v-if="can('roles.edit')"
                                     :href="route('roles.edit', role.id)"
                                     class="cursor-pointer rounded-lg bg-blue-700 px-3 py-2 text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                 >
                                     Edit
                                 </Link>
                                 <button
+                                    v-if="can('roles.delete')"
                                     @click="deleteRole(role.id)"
                                     class="ml-1 cursor-pointer rounded-lg bg-red-700 px-3 py-2 text-xs font-medium text-white hover:bg-red-800 focus:ring-4 focus:ring-red-300 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
                                 >
