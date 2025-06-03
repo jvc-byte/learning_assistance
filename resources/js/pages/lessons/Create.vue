@@ -1,7 +1,14 @@
 <script setup lang="ts">
+import { Head, Link, useForm } from '@inertiajs/vue3';
+
+import HeadingSmall from '@/components/HeadingSmall.vue';
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Undo2 } from 'lucide-vue-next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,103 +37,86 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create Lesson" />
-
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="overflow-x-auto">
-                <form @submit.prevent="submit">
-                    <div class="space-y-6">
-                        <div>
-                            <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                            <input
-                                type="text"
-                                id="title"
-                                v-model="form.title"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                :class="{ 'border-red-500': form.errors.title }"
-                            />
-                            <div v-if="form.errors.title" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.title }}
-                            </div>
-                        </div>
+        <Link
+            href="/lessons"
+            class="flex items-center gap-2 self-end rounded border border-gray-500 bg-gray-500 px-2 py-1 font-bold text-white hover:bg-gray-700"
+        >
+            <Undo2 />
+            Back to Lessons
+        </Link>
+        <Head title="Create User" />
 
-                        <div>
-                            <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
-                            <textarea
-                                id="content"
-                                v-model="form.content"
-                                rows="4"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                :class="{ 'border-red-500': form.errors.content }"
-                            ></textarea>
-                            <div v-if="form.errors.content" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.content }}
-                            </div>
-                        </div>
+        <div class="flex w-1/2 flex-col space-y-6 self-center">
+            <HeadingSmall title="Create Lesson" description="Create a new Lesson" />
 
-                        <div>
-                            <label for="subject" class="block text-sm font-medium text-gray-700">Subject</label>
-                            <input
-                                type="text"
-                                id="subject"
-                                v-model="form.subject"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                :class="{ 'border-red-500': form.errors.subject }"
-                            />
-                            <div v-if="form.errors.subject" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.subject }}
-                            </div>
-                        </div>
+            <form @submit.prevent="submit" class="space-y-6">
+                <div class="grid gap-2">
+                    <Label for="title">Title</Label>
+                    <Input id="title" class="mt-1 block w-full" v-model="form.title" required autocomplete="title" placeholder="Title" />
+                    <InputError class="mt-2" :message="form.errors.title" />
+                </div>
 
-                        <div>
-                            <label for="grade_level" class="block text-sm font-medium text-gray-700">Grade Level</label>
-                            <input
-                                type="text"
-                                id="grade_level"
-                                v-model="form.grade_level"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                :class="{ 'border-red-500': form.errors.grade_level }"
-                            />
-                            <div v-if="form.errors.grade_level" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.grade_level }}
-                            </div>
-                        </div>
+                <div class="grid gap-2">
+                    <Label for="content">Content</Label>
+                    <textarea
+                        id="content"
+                        class="mt-1 block w-full border-2"
+                        v-model="form.content"
+                        required
+                        autocomplete="content"
+                        placeholder="Content"
+                    />
+                    <InputError class="mt-2" :message="form.errors.content" />
+                </div>
 
-                        <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                            <select
-                                id="status"
-                                v-model="form.status"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                :class="{ 'border-red-500': form.errors.status }"
-                            >
-                                <option value="draft">Draft</option>
-                                <option value="active">Active</option>
-                            </select>
-                            <div v-if="form.errors.status" class="mt-2 text-sm text-red-600">
-                                {{ form.errors.status }}
-                            </div>
-                        </div>
+                <div class="grid gap-2">
+                    <Label for="subject">Subject</Label>
+                    <Input id="subject" class="mt-1 block w-full" v-model="form.subject" required autocomplete="subject" placeholder="Subject" />
+                    <InputError class="mt-2" :message="form.errors.subject" />
+                </div>
+                <div class="grid gap-2">
+                    <Label for="grade_level">Grade Level</Label>
+                    <Input
+                        id="grade_level"
+                        class="mt-1 block w-full"
+                        v-model="form.grade_level"
+                        required
+                        autocomplete="grade_level"
+                        placeholder="Grade Level"
+                    />
+                    <InputError class="mt-2" :message="form.errors.grade_level" />
+                </div>
 
-                        <div class="flex justify-end">
-                            <Link
-                                :href="route('lessons.index')"
-                                class="rounded-md border border-transparent bg-gray-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                            >
-                                Cancel
-                            </Link>
-                            <button
-                                type="submit"
-                                class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                :disabled="form.processing"
-                            >
-                                Create
-                            </button>
-                        </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select
+                        id="status"
+                        v-model="form.status"
+                        class="mt-1 block w-full text-gray-800 py-3 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        :class="{ 'border-red-500': form.errors.status }"
+                    >
+                        <option class="text-gray-600" value="draft">Draft</option>
+                        <option class="text-gray-600" value="active">Active</option>
+                    </select>
+                    <div v-if="form.errors.status" class="mt-2 text-sm text-red-600">
+                        {{ form.errors.status }}
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <Button class="w-full" :disabled="form.processing">Save</Button>
+
+                    <Transition
+                        enter-active-class="transition ease-in-out"
+                        enter-from-class="opacity-0"
+                        leave-active-class="transition ease-in-out"
+                        leave-to-class="opacity-0"
+                    >
+                        <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
+                    </Transition>
+                </div>
+            </form>
         </div>
     </AppLayout>
 </template>

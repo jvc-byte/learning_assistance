@@ -7,6 +7,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, BookIcon, Folder, LayoutGrid, MessageSquareTextIcon, Users, UserCog } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
+import { can } from '@/lib/can';
 
 const mainNavItems: NavItem[] = [
     {
@@ -14,16 +15,18 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
-    {
-        title: 'Users',
-        href: '/users',
-        icon: Users,
-    },
-    {
-        title: 'Roles',
-        href: '/roles',
-        icon: UserCog,
-    },
+    ...(can('users.super') ? [
+        {
+            title: 'Users',
+            href: '/users',
+            icon: Users,
+        },
+        {
+            title: 'Roles',
+            href: '/roles',
+            icon: UserCog,
+        },
+    ] : []),
     {
         title: 'Lessons',
         href: '/lessons',

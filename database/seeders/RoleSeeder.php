@@ -19,6 +19,7 @@ class RoleSeeder extends Seeder
         $roles = [
             'admin' => [
                 'users.view',
+                'users.super',
                 'users.create',
                 'users.edit',
                 'users.delete',

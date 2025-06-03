@@ -14,6 +14,3 @@ Route::resource('roles', RoleController::class)
 Route::resource('roles', RoleController::class)
             ->only(["destroy"])
             ->middleware('permission:roles.delete');
-
-
-

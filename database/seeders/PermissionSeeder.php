@@ -15,6 +15,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             'users.view',
+            'users.super',
             'users.create',
             'users.edit',
             'users.delete',

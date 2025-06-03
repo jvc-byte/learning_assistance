@@ -2,7 +2,7 @@
 import { defineProps } from 'vue';
 import { type LessonRecommendation } from '@/types/LessonReader';
 
-const props = defineProps<{
+defineProps<{
     recommendations: LessonRecommendation[];
 }>();
 
