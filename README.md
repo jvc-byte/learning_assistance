@@ -80,17 +80,15 @@ The application uses a role-based access control system with three main roles:
 - Can modify user roles and permissions
 - Has access to system settings and configurations
 
-### Admin
-- Can manage regular users
+### Admin (Teacher)
 - Can create, edit, and delete lessons
 - Can view user activity and analytics
 - Cannot modify other admin or super admin accounts
 
-### User
+### User (Student)
 - Can view and read lessons
 - Can interact with the AI chat assistant
 - Can track personal learning progress
-- Cannot modify lessons or manage other users
 
 Permissions are enforced at both the route and controller level, ensuring that users can only access features appropriate to their role.
 
