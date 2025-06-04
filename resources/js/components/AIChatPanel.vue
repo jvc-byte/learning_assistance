@@ -2,8 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageSquareDiff } from 'lucide-vue-next';
-import { nextTick, ref, onMounted, watchEffect } from 'vue';
-import { defineProps } from 'vue';
+import { defineProps, nextTick, onMounted, ref, watchEffect } from 'vue';
 
 interface Message {
     id: number;
@@ -38,21 +37,76 @@ const messages = ref<Message[]>([
 const newMessage = ref('');
 const isLoading = ref(false);
 const messageCount = ref(1);
+
 const csrfToken = ref('');
+const isCsrfReady = ref(false);
 const debugInfo = ref('');
 
 // Get CSRF token on component mount
-onMounted(() => {
-    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (token) {
-        csrfToken.value = token;
-        console.log('CSRF token found:', token.substring(0, 10) + '...');
-    } else {
-        console.error('CSRF token not found in page meta tags');
+const initializeCsrfToken = async () => {
+    try {
+        // First try to get token from meta tag
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) {
+            csrfToken.value = meta.getAttribute('content') || '';
+            isCsrfReady.value = true;
+            console.log('CSRF token found in meta:', csrfToken.value.substring(0, 10) + '...');
+            return;
+        }
+
+        // If not in meta, fetch from API using Laravel's CSRF token endpoint
+        try {
+            // First try to get token from Laravel's CSRF token endpoint
+            const response = await fetch('/sanctum/csrf-cookie', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch CSRF token: ${response.status}`);
+            }
+
+            // Then get the token from the meta tag
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) {
+                csrfToken.value = meta.getAttribute('content') || '';
+                isCsrfReady.value = true;
+                console.log('CSRF token fetched from Laravel:', csrfToken.value.substring(0, 10) + '...');
+            } else {
+                throw new Error('CSRF token not found in meta tag after fetching CSRF cookie');
+            }
+        } catch (error) {
+            console.error('Error fetching CSRF token:', error);
+            throw error;
+        }
+    } catch (error) {
+        console.error('Error getting CSRF token:', error);
+        throw error;
     }
-    
-    // Update debug info
-    updateDebugInfo();
+};
+
+// Get CSRF token on component mount
+onMounted(async () => {
+    try {
+        // Watch for authentication changes
+        watchEffect(async () => {
+            if (!isCsrfReady.value) {
+                await initializeCsrfToken();
+            }
+        });
+
+        // Initial initialization
+        await initializeCsrfToken();
+        
+        // Update debug info
+        updateDebugInfo();
+    } catch (error) {
+        console.error('Error initializing component:', error);
+        // Set default error state
+        isCsrfReady.value = false;
+        csrfToken.value = '';
+        updateDebugInfo();
+    }
 });
 
 const updateDebugInfo = () => {
@@ -64,7 +118,7 @@ const updateDebugInfo = () => {
 };
 
 const sendMessage = async () => {
-    if (!newMessage.value.trim() || isLoading.value) return;
+    if (!newMessage.value.trim() || isLoading.value || !isCsrfReady.value) return;
 
     // Validate lessonId before making the request
     if (!props.lessonId || props.lessonId === 'undefined' || props.lessonId === undefined) {
@@ -111,8 +165,11 @@ const sendMessage = async () => {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': csrfToken.value,
             },
-            credentials: 'include',
-            body: JSON.stringify(requestBody),
+            // For Laravel, we need to send the CSRF token in the body as well
+            body: JSON.stringify({
+                ...requestBody,
+                _token: csrfToken.value
+            }),
         });
 
         console.log('Response status:', response.status);
@@ -177,25 +234,24 @@ const sendMessage = async () => {
                 timestamp: new Date().toLocaleTimeString(),
             });
         }
-
     } catch (error: unknown) {
         console.error('Chat error:', error);
-        
+
         let errorMessage = 'Sorry, I encountered an error while processing your message.';
-        
+
         if (error instanceof Error) {
             errorMessage = error.message;
         } else if (typeof error === 'string') {
             errorMessage = error;
         }
-        
+
         messages.value.push({
             id: ++messageCount.value,
             content: errorMessage,
             sender: 'assistant',
             timestamp: new Date().toLocaleTimeString(),
         });
-        
+
         // Restore the user's message to the input if there was an error
         newMessage.value = messageToSend;
     } finally {
@@ -233,34 +289,26 @@ const handleKeyPress = (event: KeyboardEvent) => {
         </div>
 
         <!-- Debug Information Panel -->
-        <div v-if="!props.lessonId" class="bg-red-50 border-l-4 border-red-400 p-4">
+        <div v-if="!props.lessonId" class="border-l-4 border-red-400 bg-red-50 p-4">
             <div class="flex">
                 <div class="ml-3">
-                    <p class="text-sm text-red-700">
-                        <strong>Debug Info:</strong> lessonId prop is missing or undefined.
-                    </p>
-                    <pre class="text-xs text-red-600 mt-2 whitespace-pre-wrap">{{ debugInfo }}</pre>
-                    <p class="text-sm text-red-700 mt-2">
+                    <p class="text-sm text-red-700"><strong>Debug Info:</strong> lessonId prop is missing or undefined.</p>
+                    <pre class="mt-2 text-xs whitespace-pre-wrap text-red-600">{{ debugInfo }}</pre>
+                    <p class="mt-2 text-sm text-red-700">
                         <strong>Solution:</strong> Make sure you're passing the lessonId prop correctly:
-                        <code class="bg-red-100 px-1 rounded">&lt;AIChatPanel :lesson-id="yourLessonId" /&gt;</code>
+                        <code class="rounded bg-red-100 px-1">&lt;AIChatPanel :lesson-id="yourLessonId" /&gt;</code>
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="flex-1 overflow-y-auto">
-            <div class="p-4 space-y-4">
-                <div
-                    v-for="message in messages"
-                    :key="message.id"
-                    :class="message.sender === 'user' ? 'flex justify-end' : 'flex justify-start'"
-                >
+            <div class="space-y-4 p-4">
+                <div v-for="message in messages" :key="message.id" :class="message.sender === 'user' ? 'flex justify-end' : 'flex justify-start'">
                     <div
                         :class="[
                             'max-w-[80%] rounded-lg p-3',
-                            message.sender === 'user' 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-secondary text-secondary-foreground',
+                            message.sender === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground',
                         ]"
                     >
                         <p class="whitespace-pre-wrap">{{ message.content }}</p>
@@ -269,12 +317,12 @@ const handleKeyPress = (event: KeyboardEvent) => {
                         </p>
                     </div>
                 </div>
-                
+
                 <!-- Loading indicator -->
                 <div v-if="isLoading" class="flex justify-start">
-                    <div class="max-w-[80%] rounded-lg p-3 bg-secondary text-secondary-foreground">
+                    <div class="bg-secondary text-secondary-foreground max-w-[80%] rounded-lg p-3">
                         <div class="flex items-center space-x-2">
-                            <div class="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+                            <div class="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
                             <p>EduBot is thinking...</p>
                         </div>
                     </div>
@@ -300,7 +348,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
                     {{ isLoading ? 'Sending...' : 'Send' }}
                 </Button>
             </div>
-            <p class="text-xs text-muted-foreground mt-2">
+            <p class="text-muted-foreground mt-2 text-xs">
                 Press Enter to send, Shift+Enter for new line
                 <span v-if="props.lessonId" class="ml-2">• Lesson ID: {{ props.lessonId }}</span>
             </p>

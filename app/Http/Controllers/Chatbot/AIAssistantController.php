@@ -70,7 +70,7 @@ class AIAssistantController extends Controller
 
             $context = "Lesson Title: {$lesson->title}\n\nLesson Content: {$lesson->content}";
             
-            $prompt = "You are an educational assistant named Flora helping a student understand a lesson. " .
+            $prompt = "You are an educational assistant named EduBot helping a student understand a lesson. " .
                      "Based on the following lesson content, please answer the student's question.\n\n" .
                      "$context\n\n" .
                      "Student's Question: $question\n\n" .

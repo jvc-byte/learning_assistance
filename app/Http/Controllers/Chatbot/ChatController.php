@@ -11,6 +11,8 @@ class ChatController extends Controller
 {
     public function message(Request $request)
     {
+        $request->headers->set('Accept', 'application/json');
+        
         $message = $request->input('message');
         
         if (empty($message)) {
@@ -25,7 +27,11 @@ class ChatController extends Controller
             }
 
             // Use Gemini 3.4B model
-            $response = Http::timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key={$apiKey}", [
+            $response = Http::withOptions([
+                'timeout' => 30,
+                'connect_timeout' => 10,
+                'verify' => true
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key={$apiKey}", [
                 'contents' => [
                     [
                         'parts' => [
@@ -53,7 +59,7 @@ class ChatController extends Controller
                 $errorData = $response->json();
                 $errorMessage = $errorData['error']['message'] ?? 'API request failed';
                 
-                return response()->json(['error' => 'API Error: ' . $errorMessage], 500);
+                return response()->json(['error' => 'API Error: ' . $errorMessage, 'success' => false], 500);
             }
 
         } catch (\Exception $e) {
