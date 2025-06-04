@@ -216,22 +216,84 @@ class AIAssistantController extends Controller
     private function findRelatedLessons($currentLessonId, $question)
     {
         $keywords = $this->extractKeywords($question);
+        $currentLesson = Lesson::findOrFail($currentLessonId);
         
         if (empty($keywords)) {
             return [];
         }
         
+        // Get related lessons based on keywords and subject similarity
         $relatedLessons = Lesson::where('id', '!=', $currentLessonId)
-            ->where(function($query) use ($keywords) {
+            ->where(function($query) use ($keywords, $currentLesson) {
+                // Match keywords in title or content
                 foreach ($keywords as $keyword) {
                     if (strlen($keyword) > 3) { 
                         $query->orWhere('title', 'like', "%{$keyword}%")
                               ->orWhere('content', 'like', "%{$keyword}%");
                     }
                 }
+                
+                // Boost relevance for lessons in the same subject
+                $query->orWhere('subject', $currentLesson->subject);
             })
+            ->select('id', 'title', 'subject', 'grade_level', 'content')
             ->limit(3)
-            ->get(['id', 'title']);
+            ->get()
+            ->map(function($lesson) use ($currentLesson, $question) {
+                // Calculate relevance based on:
+                // 1. Keyword matches
+                // 2. Subject similarity
+                // 3. Content overlap
+                $relevance = 0;
+                
+                // Check subject match
+                if ($lesson->subject === $currentLesson->subject) {
+                    $relevance += 0.3;
+                }
+                
+                // Check grade level similarity
+                $currentLevel = (int) $currentLesson->grade_level;
+                $lessonLevel = (int) $lesson->grade_level;
+                $levelDiff = abs($currentLevel - $lessonLevel);
+                $relevance += max(0, (1 - ($levelDiff / 3)) * 0.2);
+                
+                // Check content similarity
+                $currentContent = strtolower($currentLesson->content);
+                $lessonContent = strtolower($lesson->content);
+                $question = strtolower($question);
+                
+                // Count keyword matches in content
+                $keywordMatches = 0;
+                foreach ($this->extractKeywords($question) as $keyword) {
+                    if (strpos($lessonContent, $keyword) !== false) {
+                        $keywordMatches++;
+                    }
+                }
+                
+                $relevance += min(1, $keywordMatches / count($this->extractKeywords($question))) * 0.5;
+                
+                // Determine difficulty level
+                $difficulty = 'similar';
+                if ($lessonLevel < $currentLevel) {
+                    $difficulty = 'easier';
+                } elseif ($lessonLevel > $currentLevel) {
+                    $difficulty = 'advanced';
+                }
+                
+                // Estimate reading time based on content length
+                $words = str_word_count(strip_tags($lesson->content));
+                $estimatedTime = ceil($words / 200) . ' min read';
+                
+                return [
+                    'lesson' => $lesson,
+                    'reason' => 'Related to your current lesson and question',
+                    'difficulty' => $difficulty,
+                    'estimatedTime' => $estimatedTime,
+                    'relevance' => number_format($relevance * 100, 1) . '%',
+                ];
+            })
+            ->sortByDesc('relevance')
+            ->values();
             
         return $relatedLessons->toArray();
     }

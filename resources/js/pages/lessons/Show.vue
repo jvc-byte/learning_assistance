@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
-import { defineProps, ref } from 'vue';
-import { Lesson } from '@/types/LessonReader';
-import type { LessonContext, ChatMessage, LessonRecommendation } from '@/types/LessonReader';
-import LessonReader from '../../components/LessonReader.vue';
-import AIChatPanel from '../../components/AIChatPanel.vue';
-import QuestionSuggestions from '../../components/QuestionSuggestions.vue';
-import LessonRecommendations from '../../components/LessonRecommendations.vue';
 import { can } from '@/lib/can';
+import { type BreadcrumbItem } from '@/types';
+import type { ChatMessage } from '@/types/lesson';
+import { Head, Link } from '@inertiajs/vue3';
 import { Undo2 } from 'lucide-vue-next';
+import { defineProps, ref } from 'vue';
+import AIChatPanel from '../../components/AIChatPanel.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,20 +20,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const { lesson } = defineProps<{
-    lesson: Lesson;
+    lesson: any;
 }>();
-
-const lessonContext = ref<LessonContext>({
-    currentPage: 1,
-    highlightedText: '',
-    activeSection: 'introduction',
-    readingProgress: 0,
-    timeSpent: '0 minutes'
-});
 
 const chatMessages = ref<ChatMessage[]>([]);
 const isAITyping = ref(false);
-const recommendations = ref<LessonRecommendation[]>([]);
 
 const askAI = async (question: string) => {
     isAITyping.value = true;
@@ -71,31 +58,8 @@ const askAI = async (question: string) => {
     }
 };
 
-const updateContext = (context: LessonContext) => {
-    lessonContext.value = context;
-};
 
-const handleTextHighlight = (text: string) => {
-    lessonContext.value.highlightedText = text;
-};
 
-const showRecommendations = async () => {
-    // Simulated recommendations
-    recommendations.value = [
-        {
-            lesson: {
-                id: 2,
-                title: 'Related Topic',
-                subject: lesson.subject,
-                grade_level: lesson.grade_level
-            },
-            relevanceScore: 0.85,
-            reason: 'Based on your questions about this topic',
-            difficulty: 'similar',
-            estimatedTime: '15 minutes'
-        }
-    ];
-};
 </script>
 
 <template>
@@ -109,41 +73,27 @@ const showRecommendations = async () => {
                     :href="route('lessons.index')"
                     class="flex cursor-pointer items-center rounded-lg bg-blue-700 px-3 py-2 text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
-                    
-                    <Undo2 class="mr-2"/>Back to Lessons
+                    <Undo2 class="mr-2" />Back to Lessons
                 </Link>
             </div>
             <div class="flex h-full">
-                <!-- Main Lesson Reader (70%) -->
                 <div class="w-full lg:w-3/5">
-                    <LessonReader
-                        :lesson="lesson"
-                        :context="lessonContext"
-                        @update-context="updateContext"
-                        @highlight-text="handleTextHighlight"
-                        @ask-question="askAI"
-                    />
+                    <div class="p-6">
+                        <h1 class="text-2xl font-bold mb-4">{{ lesson.title }}</h1>
+                        <div class="prose max-w-none">
+                            <div v-html="lesson.content"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- AI Chat Sidebar (30%) -->
-                <div class="w-full lg:w-2/5 pl-4">
+                <div class="w-full pl-4 lg:w-2/5">
                     <div class="space-y-4">
                         <AIChatPanel
                             :lessonId="lesson.id"
                             :messages="chatMessages"
-                            :context="lessonContext"
                             :is-typing="isAITyping"
                             @ask-question="askAI"
-                        />
-                        
-                        <QuestionSuggestions
-                            :context="lessonContext"
-                            @ask-question="askAI"
-                        />
-                        
-                        <LessonRecommendations
-                            :recommendations="recommendations"
-                            @show-recommendations="showRecommendations"
                         />
                     </div>
                 </div>

@@ -8,8 +8,6 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import LessonReader from './components/LessonReader.vue';
 import AIChatPanel from './components/AIChatPanel.vue';
-import QuestionSuggestions from './components/QuestionSuggestions.vue';
-import LessonRecommendations from './components/LessonRecommendations.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -22,8 +20,6 @@ createInertiaApp({
             .use(ZiggyVue)
             .component('LessonReader', LessonReader)
             .component('AIChatPanel', AIChatPanel)
-            .component('QuestionSuggestions', QuestionSuggestions)
-            .component('LessonRecommendations', LessonRecommendations)
             .mount(el);
     }
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps, ref, onMounted } from 'vue';
-import { type Lesson, type LessonContext } from '@/types/LessonReader';
+import { type Lesson, type LessonContext } from '@/types/lesson';
 
 const props = defineProps<{
     lesson: Lesson;

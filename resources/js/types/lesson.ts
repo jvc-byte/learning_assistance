@@ -40,10 +40,10 @@ export interface LessonRecommendation {
         subject: string;
         grade_level: string;
     };
-    relevanceScore: number;
     reason: string;
     difficulty: 'easier' | 'similar' | 'advanced' | string;
     estimatedTime: string;
+    relevance: string;
 }
 
 export interface AIResponse {
