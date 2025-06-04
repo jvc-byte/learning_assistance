@@ -65,9 +65,34 @@ graph TD
 - AI-powered chat interface using Google Gemini
 - Real-time message sending and receiving
 - User authentication and authorization
+- Role-based access control (RBAC)
 - Smooth scrolling chat interface
 - Error handling and loading states
 - Responsive design
+
+## 🛡️ Roles and Permissions
+
+The application uses a role-based access control system with three main roles:
+
+### Super Admin
+- Full access to all system features
+- Can manage users, including creating and deleting admin accounts
+- Can modify user roles and permissions
+- Has access to system settings and configurations
+
+### Admin
+- Can manage regular users
+- Can create, edit, and delete lessons
+- Can view user activity and analytics
+- Cannot modify other admin or super admin accounts
+
+### User
+- Can view and read lessons
+- Can interact with the AI chat assistant
+- Can track personal learning progress
+- Cannot modify lessons or manage other users
+
+Permissions are enforced at both the route and controller level, ensuring that users can only access features appropriate to their role.
 
 ## 📦 Installation
 
