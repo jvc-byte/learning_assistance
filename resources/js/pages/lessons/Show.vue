@@ -129,6 +129,7 @@ const showRecommendations = async () => {
                 <div class="w-full lg:w-2/5 pl-4">
                     <div class="space-y-4">
                         <AIChatPanel
+                            :lessonId="lesson.id"
                             :messages="chatMessages"
                             :context="lessonContext"
                             :is-typing="isAITyping"

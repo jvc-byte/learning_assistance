@@ -2,6 +2,14 @@
 import { Conversation } from '@/types';
 import { MessageSquare } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+if (!user.value) {
+    throw new Error('User not authenticated');
+}
 
 const chat_history: Conversation[] = [
     {
