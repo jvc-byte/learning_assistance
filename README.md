@@ -92,6 +92,17 @@ The application uses a role-based access control system with three main roles:
 
 Permissions are enforced at both the route and controller level, ensuring that users can only access features appropriate to their role.
 
+## 📺 Project Demo
+
+Watch the project in action:
+
+<p align="center">
+  <video width="800" controls>
+    <source src="https://raw.githubusercontent.com/jvc-byte/learning_assistance/main/public/videos/project-rundown.webm" type="video/webm">
+    Your browser does not support the video tag.
+  </video>
+</p>
+
 ## 📦 Installation
 
 1. Clone the repository
