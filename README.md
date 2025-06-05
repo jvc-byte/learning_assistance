@@ -97,10 +97,11 @@ Permissions are enforced at both the route and controller level, ensuring that u
 Watch the project in action:
 
 <p align="center">
-  <iframe width="800" height="450" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" title="Learning Assistance Platform Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <video width="800" controls>
+    <source src="https://raw.githubusercontent.com/jvc-byte/learning_assistance/main/public/videos/video-record-of-system.webm" type="video/webm">
+    Your browser does not support the video tag.
+  </video>
 </p>
-
-> Note: Please replace `YOUR_VIDEO_ID` with the actual YouTube video ID once you upload the demo video.
 
 ## 📦 Installation
 
