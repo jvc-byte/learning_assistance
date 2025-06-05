@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { can } from '@/lib/can';
 import { type BreadcrumbItem } from '@/types';
-import type { ChatMessage } from '@/types/lesson';
+import type { ChatMessage } from '@/types/LessonReader';
 import { Head, Link } from '@inertiajs/vue3';
 import { Undo2 } from 'lucide-vue-next';
 import { defineProps, ref } from 'vue';
@@ -35,14 +35,14 @@ const askAI = async (question: string) => {
             references: ['section-1', 'section-2'],
             difficulty: 'intermediate',
             suggestions: ['Explain further', 'Show example', 'Test understanding'],
-            relatedQuestions: ['What is the main concept?', 'How does this apply?', 'Can you give an example?']
+            relatedQuestions: ['What is the main concept?', 'How does this apply?', 'Can you give an example?'],
         };
 
         chatMessages.value.push({
             id: Date.now().toString(),
             content: question,
             sender: 'user',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         });
 
         chatMessages.value.push({
@@ -51,15 +51,12 @@ const askAI = async (question: string) => {
             sender: 'ai',
             timestamp: new Date().toISOString(),
             references: response.references,
-            difficulty: response.difficulty
+            difficulty: response.difficulty,
         });
     } finally {
         isAITyping.value = false;
     }
 };
-
-
-
 </script>
 
 <template>
@@ -79,7 +76,7 @@ const askAI = async (question: string) => {
             <div class="flex h-full">
                 <div class="w-full lg:w-3/5">
                     <div class="p-6">
-                        <h1 class="text-2xl font-bold mb-4">{{ lesson.title }}</h1>
+                        <h1 class="mb-4 text-2xl font-bold">{{ lesson.title }}</h1>
                         <div class="prose max-w-none">
                             <div v-html="lesson.content"></div>
                         </div>
@@ -89,12 +86,7 @@ const askAI = async (question: string) => {
                 <!-- AI Chat Sidebar (30%) -->
                 <div class="w-full pl-4 lg:w-2/5">
                     <div class="space-y-4">
-                        <AIChatPanel
-                            :lessonId="lesson.id"
-                            :messages="chatMessages"
-                            :is-typing="isAITyping"
-                            @ask-question="askAI"
-                        />
+                        <AIChatPanel :lessonId="lesson.id" :messages="chatMessages" :is-typing="isAITyping" @ask-question="askAI" />
                     </div>
                 </div>
             </div>
