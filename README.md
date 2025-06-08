@@ -105,7 +105,11 @@ Watch the project in action:
 
 ## 📦 Installation
 
-1. Clone the repository
+1. Clone the repository:
+    ```bash
+    git clone git@github.com:jvc-byte/learning_assistance.git
+    cd learning_assistance
+    ```
 2. Install PHP dependencies:
    ```bash
    composer install
